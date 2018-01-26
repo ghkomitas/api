@@ -119,7 +119,7 @@ class ProductController extends Controller
     }
 
     public function productUserCheck($product){
-
+        dd(Auth::id());
         if (Auth::id() !== $product->user_id){
             throw new ProductNotBelongsToUser;
         }
