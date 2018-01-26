@@ -49,7 +49,7 @@ class ReviewController extends Controller
      */
     public function store(ReviewRequest $request,Product $product)
     {
-        $this->productUserCheck($product);
+        $this->reviewUserCheck($product);
         $review = new Review($request->all());
         $product->reviews()->save($review);
         return response([
@@ -63,9 +63,9 @@ class ReviewController extends Controller
      * @param  \App\Models\Review  $review
      * @return \Illuminate\Http\Response
      */
-    public function show(Review $review)
+    public function show(Product $product,Review $review)
     {
-        //
+        return $review;
     }
 
     /**
@@ -86,9 +86,14 @@ class ReviewController extends Controller
      * @param  \App\Models\Review  $review
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Review $review)
+    public function update(Request $request,Product $product, Review $review)
     {
-        //
+        $this->reviewUserCheck($product);
+        $review->update($request->all());
+        return response([
+            'data'=> new ReviewResource($review)
+        ],Response::HTTP_CREATED);
+
     }
 
     /**
@@ -97,12 +102,15 @@ class ReviewController extends Controller
      * @param  \App\Models\Review  $review
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Review $review)
+    public function destroy(Product $product,Review $review)
     {
-        //
+        $this->reviewUserCheck($product);
+        $review->delete();
+        return response(null,Response::HTTP_NO_CONTENT);
+
     }
 
-    public function productUserCheck($product){
+    public function reviewUserCheck($product){
         if (Auth::id() !== $product->user_id){
             throw new ProductNotBelongsToUser;
         }
